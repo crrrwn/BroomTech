@@ -1,8 +1,8 @@
 <template>
   <div>
     <!-- Hero Section -->
-    <div class="relative bg-gradient-to-br from-green-500 to-green-600 text-white overflow-hidden">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 relative z-10">
+    <div class="bg-gradient-to-br from-green-500 to-green-600 text-white py-20">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="max-w-3xl">
           <h1 class="text-6xl font-bold mb-6">Deliver Faster</h1>
           <p class="text-2xl mb-4">On-demand delivery platform.</p>
@@ -15,226 +15,256 @@
           </button>
         </div>
       </div>
-      <div class="absolute right-0 top-1/2 transform -translate-y-1/2 hidden lg:block">
-        <img src="/placeholder.svg?height=400&width=600" alt="Delivery vehicles" class="h-auto w-[600px]" />
-      </div>
     </div>
 
-    <!-- Service Cards -->
-    <div class="py-16 bg-gray-50">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div v-for="service in services" :key="service.title" 
-            class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-            <div class="p-8">
-              <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
-                <component :is="service.icon" class="w-6 h-6 text-green-600" />
-              </div>
-              <h3 class="text-xl font-bold mb-2">{{ service.title }}</h3>
-              <p class="text-gray-600 mb-4">{{ service.description }}</p>
-              <a href="#" class="text-green-600 hover:text-green-700 font-medium inline-flex items-center">
-                {{ service.action }} 
-                <ChevronRight class="w-4 h-4 ml-1" />
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Features Section -->
-    <div class="py-16">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="lg:grid lg:grid-cols-2 lg:gap-12 items-center">
-          <div>
-            <h2 class="text-4xl font-bold mb-4">Fast. Simple. Affordable.</h2>
-            <p class="text-xl text-gray-600 mb-8">Your 24/7 delivery app partner</p>
-            <div class="space-y-6">
-              <div v-for="feature in features" :key="feature.title" class="flex items-start">
-                <div class="flex-shrink-0">
-                  <component :is="feature.icon" class="w-6 h-6 text-green-600" />
+    <!-- Booking Section -->
+    <div id="booking" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Booking Form -->
+        <div class="lg:col-span-2">
+          <div class="bg-white p-6 rounded-lg shadow-lg">
+            <h2 class="text-2xl font-bold mb-6">Book a Delivery</h2>
+            
+            <!-- Progress Steps -->
+            <div class="flex items-center justify-between mb-8">
+              <div v-for="(step, index) in steps" :key="step.id" class="flex items-center">
+                <div 
+                  class="w-8 h-8 rounded-full flex items-center justify-center"
+                  :class="[
+                    currentStep >= index ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-600'
+                  ]"
+                >
+                  {{ index + 1 }}
                 </div>
-                <div class="ml-4">
-                  <h3 class="text-lg font-semibold">{{ feature.title }}</h3>
-                  <p class="text-gray-600">{{ feature.description }}</p>
-                </div>
+                <span class="ml-2 text-sm font-medium">{{ step.name }}</span>
+                <div 
+                  v-if="index < steps.length - 1" 
+                  class="w-16 h-1 mx-4"
+                  :class="currentStep > index ? 'bg-green-600' : 'bg-gray-200'"
+                ></div>
               </div>
             </div>
-            <button class="mt-8 bg-green-600 text-white px-8 py-3 rounded-md hover:bg-green-700 transition-colors">
-              Book a delivery now
-            </button>
-          </div>
-          <div class="mt-12 lg:mt-0">
-            <img src="/placeholder.svg?height=400&width=400" alt="Delivery illustration" class="rounded-lg shadow-lg" />
-          </div>
-        </div>
-      </div>
-    </div>
 
-    <!-- Vehicle Section -->
-    <div class="py-16 bg-gray-50">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 class="text-3xl font-bold text-center mb-12">The right delivery vehicle for all your needs</h2>
-        <div class="max-w-3xl mx-auto">
-          <div class="bg-white rounded-lg shadow-lg p-8">
-            <img src="/placeholder.svg?height=200&width=300" alt="Motorcycle" class="mx-auto mb-6" />
-            <h3 class="text-2xl font-bold text-center mb-2">Motorcycle</h3>
-            <p class="text-gray-600 text-center">Perfect for small packages and quick deliveries</p>
-            <div class="mt-6 text-center">
-              <button class="bg-green-600 text-white px-8 py-3 rounded-md hover:bg-green-700 transition-colors">
-                Choose this vehicle
+            <!-- Location Step -->
+            <div v-if="currentStep === 0">
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700">Pickup Location</label>
+                  <input 
+                    v-model="formData.pickupLocation"
+                    type="text"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+                    placeholder="Enter pickup address"
+                  >
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700">Delivery Location</label>
+                  <input 
+                    v-model="formData.deliveryLocation"
+                    type="text"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+                    placeholder="Enter delivery address"
+                  >
+                </div>
+              </div>
+            </div>
+
+            <!-- Vehicle Step -->
+            <div v-if="currentStep === 1">
+              <div class="grid grid-cols-1 gap-4">
+                <div 
+                  class="border rounded-lg p-4 cursor-pointer"
+                  :class="formData.vehicle === 'motorcycle' ? 'border-green-600' : 'border-gray-200'"
+                  @click="selectVehicle('motorcycle')"
+                >
+                  <img src="/placeholder.svg?height=150&width=150" alt="Motorcycle" class="w-32 h-32 object-cover mb-2">
+                  <h3 class="font-medium">Motorcycle</h3>
+                  <p class="text-sm text-gray-600">Best for small packages</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Package Step -->
+            <div v-if="currentStep === 2">
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700">Package Type</label>
+                  <select 
+                    v-model="formData.packageType"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+                  >
+                    <option value="small">Small Package</option>
+                    <option value="medium">Medium Package</option>
+                    <option value="large">Large Package</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700">Package Weight (kg)</label>
+                  <input 
+                    v-model="formData.weight"
+                    type="number"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+                  >
+                </div>
+              </div>
+            </div>
+
+            <!-- Payment Step -->
+            <div v-if="currentStep === 3">
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700">Payment Method</label>
+                  <select 
+                    v-model="formData.paymentMethod"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+                  >
+                    <option value="cash">Cash</option>
+                    <option value="card">Credit Card</option>
+                    <option value="ewallet">E-Wallet</option>
+                  </select>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                  <h4 class="font-medium mb-2">Order Summary</h4>
+                  <div class="space-y-2 text-sm">
+                    <div class="flex justify-between">
+                      <span>Delivery Fee</span>
+                      <span>₱150.00</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span>Service Fee</span>
+                      <span>₱50.00</span>
+                    </div>
+                    <div class="flex justify-between font-medium">
+                      <span>Total</span>
+                      <span>₱200.00</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-8 flex justify-between">
+              <button 
+                v-if="currentStep > 0"
+                @click="previousStep"
+                class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+              >
+                Previous
+              </button>
+              <button 
+                v-if="currentStep < steps.length - 1"
+                @click="nextStep"
+                class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+              >
+                Next
+              </button>
+              <button 
+                v-else
+                @click="submitBooking"
+                class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+              >
+                Confirm Booking
               </button>
             </div>
           </div>
         </div>
-      </div>
-    </div>
 
-    <!-- App Section -->
-    <div class="py-16">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h2 class="text-3xl font-bold mb-12">Our Apps</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-4xl mx-auto">
-          <div class="bg-white rounded-lg shadow-lg p-8">
-            <h3 class="text-xl font-bold mb-4">Our Delivery App</h3>
-            <img src="/placeholder.svg?height=100&width=100" alt="BroomTech app" class="mx-auto mb-6" />
-            <div class="flex justify-center space-x-4">
-              <a href="#" class="block">
-                <img src="/placeholder.svg?height=40&width=120" alt="App Store" />
-              </a>
-              <a href="#" class="block">
-                <img src="/placeholder.svg?height=40&width=120" alt="Google Play" />
-              </a>
-            </div>
-          </div>
-          <div class="bg-white rounded-lg shadow-lg p-8">
-            <h3 class="text-xl font-bold mb-4">Our Driver App</h3>
-            <img src="/placeholder.svg?height=100&width=100" alt="BroomTech driver app" class="mx-auto mb-6" />
-            <div class="flex justify-center space-x-4">
-              <a href="#" class="block">
-                <img src="/placeholder.svg?height=40&width=120" alt="App Store" />
-              </a>
-              <a href="#" class="block">
-                <img src="/placeholder.svg?height=40&width=120" alt="Google Play" />
-              </a>
+        <!-- Services -->
+        <div class="lg:col-span-1">
+          <h2 class="text-2xl font-bold mb-6">Our Services</h2>
+          <div class="space-y-4">
+            <div v-for="service in services" :key="service.id" class="bg-white p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow">
+              <div class="flex items-start">
+                <div class="bg-green-100 p-3 rounded-full">
+                  <component :is="service.icon" class="w-6 h-6 text-green-600" />
+                </div>
+                <div class="ml-4">
+                  <h3 class="text-lg font-medium">{{ service.name }}</h3>
+                  <p class="text-gray-600">{{ service.description }}</p>
+                  <a href="#" class="text-green-600 hover:text-green-700 text-sm font-medium mt-2 inline-block">
+                    Learn More →
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-
-    <!-- Footer -->
-    <footer class="bg-gray-50 pt-16 pb-12">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
-          <div>
-            <h4 class="text-sm font-semibold text-gray-900 mb-4">Service</h4>
-            <ul class="space-y-3">
-              <li v-for="link in footerLinks.service" :key="link">
-                <a href="#" class="text-gray-600 hover:text-green-600">{{ link }}</a>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h4 class="text-sm font-semibold text-gray-900 mb-4">Company</h4>
-            <ul class="space-y-3">
-              <li v-for="link in footerLinks.company" :key="link">
-                <a href="#" class="text-gray-600 hover:text-green-600">{{ link }}</a>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h4 class="text-sm font-semibold text-gray-900 mb-4">Legal</h4>
-            <ul class="space-y-3">
-              <li v-for="link in footerLinks.legal" :key="link">
-                <a href="#" class="text-gray-600 hover:text-green-600">{{ link }}</a>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h4 class="text-sm font-semibold text-gray-900 mb-4">Follow Us</h4>
-            <div class="flex space-x-4">
-              <a v-for="social in socials" :key="social.name" 
-                :href="social.href" 
-                class="text-gray-400 hover:text-green-600">
-                <component :is="social.icon" class="w-6 h-6" />
-              </a>
-            </div>
-          </div>
-        </div>
-        <div class="mt-12 pt-8 border-t border-gray-200">
-          <p class="text-gray-400 text-center">&copy; {{ new Date().getFullYear() }} BroomTech. All rights reserved.</p>
-        </div>
-      </div>
-    </footer>
   </div>
 </template>
 
 <script setup>
-import { 
-  Briefcase, User, Truck, Clock, DollarSign, MapPin, Shield, 
-  ChevronRight, Facebook, Instagram, Youtube, Linkedin 
-} from 'lucide-vue-next'
+import { ref, reactive } from 'vue'
+import { Truck } from 'lucide-vue-next'
+
+const steps = [
+  { id: 1, name: 'Location' },
+  { id: 2, name: 'Vehicle' },
+  { id: 3, name: 'Package' },
+  { id: 4, name: 'Payment' }
+]
+
+const currentStep = ref(0)
+
+const formData = reactive({
+  pickupLocation: '',
+  deliveryLocation: '',
+  vehicle: '',
+  packageType: '',
+  weight: '',
+  paymentMethod: ''
+})
 
 const services = [
   {
-    title: 'Business',
-    description: 'Last mile delivery solutions for businesses of all sizes',
-    action: 'Grow your business',
-    icon: Briefcase
+    id: 1,
+    name: 'Express Delivery',
+    description: 'Fast and reliable delivery for urgent packages',
+    icon: Truck
   },
   {
-    title: 'Personal',
-    description: 'Quick on-demand delivery service for all your needs',
-    action: 'Check our courier service',
-    icon: User
+    id: 2,
+    name: 'Standard Delivery',
+    description: 'Cost-effective solution for regular shipments',
+    icon: Truck
   },
   {
-    title: 'Driver',
-    description: 'Join our network of professional delivery partners',
-    action: 'Become a partner',
+    id: 3,
+    name: 'Grocery Delivery',
+    description: 'Get your groceries delivered to your doorstep',
     icon: Truck
   }
 ]
 
-const features = [
-  {
-    title: 'Affordable rates',
-    description: 'Transparent pricing with no hidden costs',
-    icon: DollarSign
-  },
-  {
-    title: 'Fast order matching',
-    description: 'Match orders and deliver your goods immediately',
-    icon: Clock
-  },
-  {
-    title: 'Wide service coverage',
-    description: 'Available across major cities in the Philippines',
-    icon: MapPin
-  },
-  {
-    title: 'Safe delivery',
-    description: 'Professional partner drivers to deliver packages safely',
-    icon: Shield
-  }
-]
-
-const footerLinks = {
-  service: ['Business', 'Personal', 'Driver', 'Pricing', 'FAQs'],
-  company: ['About Us', 'Deliver Care', 'Blog', 'Careers', 'Contact Us'],
-  legal: ['Privacy Policy', 'Terms & Conditions', 'Cookie Policy']
+const selectVehicle = (vehicleId) => {
+  formData.vehicle = vehicleId
 }
 
-const socials = [
-  { name: 'Facebook', icon: Facebook, href: '#' },
-  { name: 'Instagram', icon: Instagram, href: '#' },
-  { name: 'YouTube', icon: Youtube, href: '#' },
-  { name: 'LinkedIn', icon: Linkedin, href: '#' }
-]
+const nextStep = () => {
+  if (currentStep.value < steps.length - 1) {
+    currentStep.value++
+  }
+}
+
+const previousStep = () => {
+  if (currentStep.value > 0) {
+    currentStep.value--
+  }
+}
+
+const submitBooking = async () => {
+  try {
+    // Here you would typically submit to your backend
+    console.log('Submitting booking:', formData)
+    // Handle success (e.g., show success message, redirect to tracking page)
+  } catch (error) {
+    console.error('Error creating booking:', error)
+    // Handle error
+  }
+}
 
 const scrollToBooking = () => {
-  // Implement smooth scroll to booking section
   document.getElementById('booking')?.scrollIntoView({ behavior: 'smooth' })
 }
 </script>
